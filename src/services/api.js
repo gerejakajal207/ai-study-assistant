@@ -85,3 +85,7 @@ export async function generateFlashcardsFromNotes(file) {
   await new Promise((r) => setTimeout(r, 2000));
   return MOCK_FLASHCARDS;
 }
+export async function chatWithNotes(file, question, history) {
+  await new Promise(r => setTimeout(r, 1500));
+  return "This is a mock response. The real answer will come from your notes once the backend is ready.";
+}

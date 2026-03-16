@@ -9,6 +9,7 @@ export default function Navbar() {
     { label: "Home", path: "/" },
     { label: "Topic Practice", path: "/topic-practice" },
     { label: "Notes Upload", path: "/notes-upload" },
+    { label: "Chat", path: "/chat" },
   ];
 
   // Hide navbar on auth page

@@ -8,6 +8,7 @@ import { ThemeProvider } from "./ThemeContext";
 import Navbar from "./components/Navbar";
 
 // OTHERS //
+import ChatWithNotes from "./pages/ChatWithNotes";
 import TopicPractice from "./pages/TopicPractice";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
@@ -23,7 +24,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/notes-upload" element={<NotesUpload />} />
-
+          <Route path="/chat" element={<ChatWithNotes />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
