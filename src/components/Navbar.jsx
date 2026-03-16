@@ -8,6 +8,7 @@ export default function Navbar() {
   const navLinks = [
     { label: "Home", path: "/" },
     { label: "Topic Practice", path: "/topic-practice" },
+    { label: "Notes Upload", path: "/notes-upload" },
   ];
 
   // Hide navbar on auth page

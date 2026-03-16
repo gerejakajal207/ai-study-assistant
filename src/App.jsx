@@ -11,6 +11,7 @@ import Navbar from "./components/Navbar";
 import TopicPractice from "./pages/TopicPractice";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
+import NotesUpload from "./pages/NotesUpload";
 
 export default function App() {
   return (
@@ -21,6 +22,8 @@ export default function App() {
           <Route path="/topic-practice" element={<TopicPractice />} />
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/notes-upload" element={<NotesUpload />} />
+
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
