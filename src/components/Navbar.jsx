@@ -10,6 +10,9 @@ export default function Navbar() {
     { label: "Topic Practice", path: "/topic-practice" },
   ];
 
+  // Hide navbar on auth page
+  if (location.pathname === "/auth") return null;
+
   return (
     <nav
       className="sticky top-0 z-50 border-b"
@@ -62,18 +65,33 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="w-10 h-10 rounded-xl flex items-center justify-center text-lg transition-all hover:scale-105 active:scale-95"
-          style={{
-            backgroundColor: "var(--bg-subtle)",
-            color: "var(--text-secondary)",
-          }}
-          aria-label="Toggle theme"
-        >
-          {theme === "light" ? "🌙" : "☀️"}
-        </button>
+        {/* Right side */}
+        <div className="flex items-center gap-3">
+          <Link
+            to="/auth"
+            className="px-4 py-2 rounded-xl text-sm font-semibold border transition-all hover:scale-105 active:scale-95"
+            style={{
+              borderColor: "var(--border)",
+              color: "var(--text-secondary)",
+              backgroundColor: "var(--bg-subtle)",
+            }}
+          >
+            Login
+          </Link>
+
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-lg transition-all hover:scale-105 active:scale-95"
+            style={{
+              backgroundColor: "var(--bg-subtle)",
+              color: "var(--text-secondary)",
+            }}
+            aria-label="Toggle theme"
+          >
+            {theme === "light" ? "🌙" : "☀️"}
+          </button>
+        </div>
       </div>
     </nav>
   );
