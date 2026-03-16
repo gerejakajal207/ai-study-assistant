@@ -1,3 +1,104 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #f8f7f4;
+  --bg-card: #ffffff;
+  --bg-subtle: #f0ede8;
+  --text-primary: #1a1814;
+  --text-secondary: #6b6560;
+  --text-muted: #a09b95;
+  --accent: #5b4cf5;
+  --accent-light: #ede9fe;
+  --accent-hover: #4a3dd4;
+  --border: #e8e4df;
+  --shadow: 0 2px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.10);
+}
+
+[data-theme="dark"] {
+  --bg: #0f0e0c;
+  --bg-card: #1a1916;
+  --bg-subtle: #242220;
+  --text-primary: #f0ede8;
+  --text-secondary: #a09b95;
+  --text-muted: #6b6560;
+  --accent: #7c6ff7;
+  --accent-light: #1e1a3a;
+  --accent-hover: #9389f8;
+  --border: #2a2825;
+  --shadow: 0 2px 16px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.4);
+}
+
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+}
+
+.font-display {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Flashcard flip */
+.flashcard-scene {
+  perspective: 1000px;
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.flashcard-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.flashcard-back {
+  transform: rotateY(180deg);
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(1); opacity: 0.4; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.4s ease forwards;
+}
+
+.animate-fade-up-delay-1 { animation: fadeUp 0.4s ease 0.1s both; }
+.animate-fade-up-delay-2 { animation: fadeUp 0.4s ease 0.2s both; }
+.animate-fade-up-delay-3 { animation: fadeUp 0.4s ease 0.3s both; }
