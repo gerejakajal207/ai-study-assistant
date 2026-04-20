@@ -1,91 +1,158 @@
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
-const MOCK_MCQS = [
-  {
-    question: "What is photosynthesis?",
-    options: {
-      A: "Process of respiration",
-      B: "Process of converting sunlight to food",
-      C: "Process of cell division",
-      D: "Process of digestion",
-    },
-    answer: "B",
-    explanation:
-      "Photosynthesis converts sunlight, water and CO2 into glucose and oxygen.",
-  },
-  {
-    question: "Where does photosynthesis occur?",
-    options: {
-      A: "Mitochondria",
-      B: "Nucleus",
-      C: "Chloroplast",
-      D: "Ribosome",
-    },
-    answer: "C",
-    explanation:
-      "Chloroplasts contain chlorophyll which absorbs sunlight for photosynthesis.",
-  },
-  {
-    question: "What gas is released during photosynthesis?",
-    options: { A: "Carbon Dioxide", B: "Nitrogen", C: "Hydrogen", D: "Oxygen" },
-    answer: "D",
-    explanation:
-      "Oxygen is released as a byproduct when water molecules are split.",
-  },
-];
+// ── Auth ────────────────────────────────────────────────────────────────────
 
-const MOCK_FLASHCARDS = [
-  {
-    front: "What is photosynthesis?",
-    back: "The process by which plants convert sunlight, water, and CO2 into glucose and oxygen.",
-  },
-  {
-    front: "Where does photosynthesis occur?",
-    back: "In the chloroplasts, specifically using the pigment chlorophyll.",
-  },
-  {
-    front: "What is the equation for photosynthesis?",
-    back: "6CO2 + 6H2O + light → C6H12O6 + 6O2",
-  },
-];
-
-export async function generateMCQs(topic) {
-  // TODO: replace with real API call when backend is ready
-  // const res = await fetch(`${BASE_URL}/topic/mcq`, {
-  //   method: "POST",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: JSON.stringify({ topic }),
-  // });
-  // if (!res.ok) throw new Error("Failed to generate MCQs");
-  // return res.json();
-
-  await new Promise((r) => setTimeout(r, 1500)); // simulate loading
-  return MOCK_MCQS;
+export async function login(email, password) {
+  const res = await fetch(`${BASE_URL}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || "Login failed");
+  localStorage.setItem("token", data.access_token);
+  return data;
 }
 
-export async function generateFlashcards(topic) {
-  // TODO: replace with real API call when backend is ready
-  // const res = await fetch(`${BASE_URL}/topic/flashcards`, {
-  //   method: "POST",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: JSON.stringify({ topic }),
-  // });
-  // if (!res.ok) throw new Error("Failed to generate flashcards");
-  // return res.json();
-
-  await new Promise((r) => setTimeout(r, 1500)); // simulate loading
-  return MOCK_FLASHCARDS;
+export async function register(name, email, password) {
+  const res = await fetch(`${BASE_URL}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, password }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || "Registration failed");
+  return data;
 }
+
+export function logout() {
+  localStorage.removeItem("token");
+}
+
+function authHeaders() {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+// ── Topic Practice ──────────────────────────────────────────────────────────
+
+export async function generateMCQs(
+  topic,
+  difficulty = "Medium",
+  confirmed = false,
+) {
+  const res = await fetch(`${BASE_URL}/topic/mcqs`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify({ topic, difficulty, confirmed }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || "Failed to generate MCQs");
+  return data; // return full object, not just data.questions
+}
+export async function generateFlashcards(
+  topic,
+  difficulty = "Medium",
+  confirmed = false,
+) {
+  const res = await fetch(`${BASE_URL}/topic/flashcards`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify({ topic, difficulty, confirmed }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || "Failed to generate flashcards");
+  return data;
+}
+
+export async function generateSummary(topic) {
+  const res = await fetch(`${BASE_URL}/topic/summary`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify({ topic }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || "Failed to generate summary");
+  return data.summary;
+}
+
+// ── Notes Upload ────────────────────────────────────────────────────────────
+
 export async function generateMCQsFromNotes(file) {
-  await new Promise((r) => setTimeout(r, 2000));
-  return MOCK_MCQS; // reuse the same mock data
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${BASE_URL}/notes/upload-mcqs`, {
+    method: "POST",
+    headers: { ...authHeaders() },
+    body: formData,
+  });
+  const data = await res.json();
+  if (!res.ok)
+    throw new Error(data.detail || "Failed to generate MCQs from notes");
+  return data.questions;
 }
 
 export async function generateFlashcardsFromNotes(file) {
-  await new Promise((r) => setTimeout(r, 2000));
-  return MOCK_FLASHCARDS;
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${BASE_URL}/notes/upload-flashcards`, {
+    method: "POST",
+    headers: { ...authHeaders() },
+    body: formData,
+  });
+  const data = await res.json();
+  if (!res.ok)
+    throw new Error(data.detail || "Failed to generate flashcards from notes");
+  return data.cards;
 }
-export async function chatWithNotes(file, question, history) {
-  await new Promise(r => setTimeout(r, 1500));
-  return "This is a mock response. The real answer will come from your notes once the backend is ready.";
+
+export async function generateSummaryFromNotes(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${BASE_URL}/notes/upload-summary`, {
+    method: "POST",
+    headers: { ...authHeaders() },
+    body: formData,
+  });
+  const data = await res.json();
+  if (!res.ok)
+    throw new Error(data.detail || "Failed to generate summary from notes");
+  return data.summary;
+}
+
+// ── Chat with Notes ─────────────────────────────────────────────────────────
+
+export async function uploadPDF(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${BASE_URL}/notes/upload-pdf`, {
+    method: "POST",
+    headers: { ...authHeaders() },
+    body: formData,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || "Failed to upload PDF");
+  return data;
+}
+
+export async function chatWithNotes(docId, question, history) {
+  const res = await fetch(`${BASE_URL}/notes/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify({ doc_id: docId, question, history }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || "Failed to get response");
+  return data.reply;
+}
+
+export async function deleteDocument(docId) {
+  await fetch(`${BASE_URL}/notes/document/${docId}`, {
+    method: "DELETE",
+    headers: { ...authHeaders() },
+  });
+}
+
+export function getToken() {
+  return localStorage.getItem("token");
 }

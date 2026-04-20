@@ -1,12 +1,13 @@
 import { useState } from "react";
-// updated
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { login, register } from "../services/api";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -19,9 +20,18 @@ export default function Auth() {
       return;
     }
     setLoading(true);
-    // TODO: connect to backend
-    await new Promise((r) => setTimeout(r, 1500));
-    setLoading(false);
+    try {
+      if (isLogin) {
+        await login(form.email, form.password);
+      } else {
+        await register(form.name, form.email, form.password);
+      }
+      navigate("/");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const toggle = () => {
@@ -45,7 +55,6 @@ export default function Auth() {
       </div>
 
       <div className="w-full max-w-md relative">
-        {/* Card */}
         <div
           className="rounded-3xl border p-8 md:p-10"
           style={{
@@ -105,7 +114,7 @@ export default function Auth() {
 
           {/* Form */}
           <div className="flex flex-col gap-4">
-            {/* Name field — only on signup */}
+            {/* Name — signup only */}
             <div
               style={{
                 maxHeight: isLogin ? "0px" : "80px",
@@ -197,7 +206,7 @@ export default function Auth() {
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span
-                    className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
+                    className="w-4 h-4 rounded-full border-2 animate-spin"
                     style={{ borderColor: "rgba(255,255,255,0.4)", borderTopColor: "#fff" }}
                   />
                   {isLogin ? "Logging in..." : "Creating account..."}

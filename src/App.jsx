@@ -1,18 +1,12 @@
-// MODULES //
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-// STYLES //
 import { ThemeProvider } from "./ThemeContext";
-
-// COMPONENTS //
 import Navbar from "./components/Navbar";
-
-// OTHERS //
-import ChatWithNotes from "./pages/ChatWithNotes";
-import TopicPractice from "./pages/TopicPractice";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
-import Auth from "./pages/Auth";
+import TopicPractice from "./pages/TopicPractice";
 import NotesUpload from "./pages/NotesUpload";
+import ChatWithNotes from "./pages/ChatWithNotes";
+import Auth from "./pages/Auth";
 
 export default function App() {
   return (
@@ -20,11 +14,17 @@ export default function App() {
       <BrowserRouter>
         <Navbar />
         <Routes>
-          <Route path="/topic-practice" element={<TopicPractice />} />
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/notes-upload" element={<NotesUpload />} />
-          <Route path="/chat" element={<ChatWithNotes />} />
+          <Route path="/topic-practice" element={
+            <ProtectedRoute><TopicPractice /></ProtectedRoute>
+          } />
+          <Route path="/notes-upload" element={
+            <ProtectedRoute><NotesUpload /></ProtectedRoute>
+          } />
+          <Route path="/chat" element={
+            <ProtectedRoute><ChatWithNotes /></ProtectedRoute>
+          } />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

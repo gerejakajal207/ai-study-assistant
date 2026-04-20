@@ -19,9 +19,9 @@ app.add_middleware(
 
 # ── Routes ───────────────────────────────────────────────────
 app.include_router(auth.router)
-app.include_router(topic.router)
-app.include_router(notes.router)
-app.include_router(chat.router)
+app.include_router(topic.router, prefix="/topic")
+app.include_router(notes.router, prefix="/notes")
+app.include_router(chat.router, prefix="/chat")
 
 @app.get("/")
 def root():

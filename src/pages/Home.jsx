@@ -8,22 +8,23 @@ export default function Home() {
       description: "Enter any topic and get MCQs or Flashcards instantly.",
       path: "/topic-practice",
       label: "Start Practicing",
+      disabled: false,
     },
     {
       icon: "📄",
       title: "Notes Upload",
       description: "Upload your PDF notes and generate quizzes from your own content.",
       path: "/notes-upload",
-      label: "Coming Soon",
-      disabled: true,
+      label: "Try Now",
+      disabled: false,
     },
     {
       icon: "💬",
       title: "Chat with Notes",
       description: "Ask questions and get answers directly from your uploaded notes.",
       path: "/chat",
-      label: "Coming Soon",
-      disabled: true,
+      label: "Try Now",
+      disabled: false,
     },
   ];
 
@@ -53,7 +54,7 @@ export default function Home() {
           style={{ color: "var(--text-secondary)" }}
         >
           Generate MCQs, flashcards, and quizzes from any topic or your own
-          notes — powered by Gemini AI.
+          notes, powered by Gemini AI.
         </p>
         <Link
           to="/topic-practice"
@@ -74,7 +75,6 @@ export default function Home() {
               backgroundColor: "var(--bg-card)",
               borderColor: "var(--border)",
               boxShadow: "var(--shadow)",
-              opacity: f.disabled ? 0.6 : 1,
             }}
           >
             <div className="text-3xl mb-4">{f.icon}</div>
@@ -90,22 +90,13 @@ export default function Home() {
             >
               {f.description}
             </p>
-            {f.disabled ? (
-              <span
-                className="text-sm font-medium"
-                style={{ color: "var(--text-muted)" }}
-              >
-                {f.label}
-              </span>
-            ) : (
-              <Link
-                to={f.path}
-                className="text-sm font-semibold transition-colors"
-                style={{ color: "var(--accent)" }}
-              >
-                {f.label} →
-              </Link>
-            )}
+            <Link
+              to={f.path}
+              className="text-sm font-semibold transition-colors"
+              style={{ color: "var(--accent)" }}
+            >
+              {f.label} →
+            </Link>
           </div>
         ))}
       </div>
