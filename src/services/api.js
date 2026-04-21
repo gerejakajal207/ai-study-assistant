@@ -78,53 +78,51 @@ export async function generateSummary(topic) {
 
 // ── Notes Upload ────────────────────────────────────────────────────────────
 
-export async function generateMCQsFromNotes(file) {
+export async function generateMCQsFromNotes(files) {
   const formData = new FormData();
-  formData.append("file", file);
+  for (const file of files) formData.append("files", file);
   const res = await fetch(`${BASE_URL}/notes/upload-mcqs`, {
     method: "POST",
     headers: { ...authHeaders() },
     body: formData,
   });
   const data = await res.json();
-  if (!res.ok)
-    throw new Error(data.detail || "Failed to generate MCQs from notes");
+  if (!res.ok) throw new Error(data.detail || "Failed to generate MCQs from notes");
   return data.questions;
 }
 
-export async function generateFlashcardsFromNotes(file) {
+export async function generateFlashcardsFromNotes(files) {
   const formData = new FormData();
-  formData.append("file", file);
+  for (const file of files) formData.append("files", file);
   const res = await fetch(`${BASE_URL}/notes/upload-flashcards`, {
     method: "POST",
     headers: { ...authHeaders() },
     body: formData,
   });
   const data = await res.json();
-  if (!res.ok)
-    throw new Error(data.detail || "Failed to generate flashcards from notes");
+  if (!res.ok) throw new Error(data.detail || "Failed to generate flashcards from notes");
   return data.cards;
 }
 
-export async function generateSummaryFromNotes(file) {
+export async function generateSummaryFromNotes(files) {
   const formData = new FormData();
-  formData.append("file", file);
+  for (const file of files) formData.append("files", file);
   const res = await fetch(`${BASE_URL}/notes/upload-summary`, {
     method: "POST",
     headers: { ...authHeaders() },
     body: formData,
   });
   const data = await res.json();
-  if (!res.ok)
-    throw new Error(data.detail || "Failed to generate summary from notes");
+  if (!res.ok) throw new Error(data.detail || "Failed to generate summary from notes");
   return data.summary;
 }
 
 // ── Chat with Notes ─────────────────────────────────────────────────────────
-
-export async function uploadPDF(file) {
+export async function uploadPDF(files) {
   const formData = new FormData();
-  formData.append("file", file);
+  for (const file of files) {
+    formData.append("files", file);
+  }
   const res = await fetch(`${BASE_URL}/notes/upload-pdf`, {
     method: "POST",
     headers: { ...authHeaders() },

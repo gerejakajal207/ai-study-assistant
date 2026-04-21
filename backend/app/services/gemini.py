@@ -1,9 +1,10 @@
-from groq import Groq
+import google.generativeai as genai
 from app.core.config import settings
 import json
 import re
 
-client = Groq(api_key=settings.GROQ_API_KEY)
+genai.configure(api_key=settings.GEMINI_API_KEY)
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 def extract_json(text: str):
     text = re.sub(r"```json|```", "", text).strip()
@@ -18,14 +19,10 @@ def extract_json(text: str):
                 pass
         raise ValueError(f"Could not parse JSON from response: {text[:200]}")
 
-def call_groq(prompt: str) -> str:
-    response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7,
-        max_tokens=4096,  
-    )
-    return response.choices[0].message.content
+def call_groq(prompt: str) -> str:  # keeping name so nothing else breaks
+    response = model.generate_content(prompt)
+    return response.text
+
 # ── Topic-based generation ──────────────────────────────────────────────────
 
 def validate_topic(topic: str) -> dict:
