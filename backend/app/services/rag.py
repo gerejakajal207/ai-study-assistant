@@ -12,7 +12,7 @@ def store_document(text: str) -> str:
         documents=chunks,
         ids=[f"{doc_id}_{i}" for i in range(len(chunks))]
     )
-    return doc_id
+    return doc_id   
 
 def query_document(doc_id: str, question: str, n_results: int = 3) -> str:
     try:

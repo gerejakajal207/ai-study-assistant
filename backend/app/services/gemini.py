@@ -2,9 +2,15 @@ import google.generativeai as genai
 from app.core.config import settings
 import json
 import re
+from groq import Groq
 
-genai.configure(api_key=settings.GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-2.5-flash")
+client = Groq(api_key=settings.GROQ_API_KEY)
+
+def truncate_text(text: str, max_words: int = 1500) -> str:
+    words = text.split()
+    if len(words) > max_words:
+        return " ".join(words[:max_words]) + "...[truncated]"
+    return text
 
 def extract_json(text: str):
     text = re.sub(r"```json|```", "", text).strip()
@@ -19,9 +25,14 @@ def extract_json(text: str):
                 pass
         raise ValueError(f"Could not parse JSON from response: {text[:200]}")
 
-def call_groq(prompt: str) -> str:  # keeping name so nothing else breaks
-    response = model.generate_content(prompt)
-    return response.text
+def call_gemini(prompt: str) -> str:  # keeping name so nothing else breaks
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.7,
+        max_tokens=8192,
+    )
+    return response.choices[0].message.content
 
 # ── Topic-based generation ──────────────────────────────────────────────────
 
@@ -42,7 +53,7 @@ def validate_topic(topic: str) -> dict:
 
     Return ONLY the JSON object, no extra text.
     """
-    return extract_json(call_groq(prompt))
+    return extract_json(call_gemini(prompt))
 
 def generate_mcqs(topic: str, difficulty: str = "Medium") -> list:
     difficulty_guidance = {
@@ -70,7 +81,7 @@ def generate_mcqs(topic: str, difficulty: str = "Medium") -> list:
         }}
     ]
     """
-    return extract_json(call_groq(prompt))
+    return extract_json(call_gemini(prompt))
 
 def generate_flashcards(topic: str, difficulty: str = "Medium") -> list:
     difficulty_guidance = {
@@ -92,7 +103,7 @@ def generate_flashcards(topic: str, difficulty: str = "Medium") -> list:
         }}
     ]
     """
-    return extract_json(call_groq(prompt))
+    return extract_json(call_gemini(prompt))
 
 def generate_summary(topic: str) -> str:
     prompt = f"""
@@ -107,11 +118,12 @@ def generate_summary(topic: str) -> str:
 
     Return ONLY the summary text. No JSON, no extra formatting, no preamble.
     """
-    return call_groq(prompt).strip()
+    return call_gemini(prompt).strip()
 
 # ── Notes-based generation ──────────────────────────────────────────────────
 
 def generate_mcqs_from_notes(text: str) -> list:
+    text = truncate_text(text)
     prompt = f"""
     Based on the following study notes, generate exactly 10 multiple choice questions.
     Return ONLY a JSON array with no extra text, in this exact format:
@@ -132,9 +144,10 @@ def generate_mcqs_from_notes(text: str) -> list:
     Study notes:
     {text}
     """
-    return extract_json(call_groq(prompt))
+    return extract_json(call_gemini(prompt))
 
 def generate_flashcards_from_notes(text: str) -> list:
+    text = truncate_text(text)
     prompt = f"""
     Based on the following study notes, generate exactly 10 flashcards.
     Return ONLY a JSON array with no extra text, in this exact format:
@@ -148,9 +161,10 @@ def generate_flashcards_from_notes(text: str) -> list:
     Study notes:
     {text}
     """
-    return extract_json(call_groq(prompt))
+    return extract_json(call_gemini(prompt))
 
 def generate_summary_from_notes(text: str) -> str:
+    text = truncate_text(text)
     prompt = f"""
     Based on the following study notes, write a clear and concise summary.
     The summary should:
@@ -165,7 +179,7 @@ def generate_summary_from_notes(text: str) -> str:
     Study notes:
     {text}
     """
-    return call_groq(prompt).strip()
+    return call_gemini(prompt).strip()
 
 # ── Chat ────────────────────────────────────────────────────────────────────
 
@@ -188,4 +202,5 @@ def chat_with_context(question: str, context: str, history: list) -> str:
     User: {question}
     Assistant:
     """
-    return call_groq(prompt)
+    return call_gemini(prompt)
+

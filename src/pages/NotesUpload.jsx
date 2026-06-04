@@ -211,7 +211,7 @@ export default function NotesUpload() {
             Analysing your notes...
           </p>
           <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-            Groq AI is reading <strong style={{ color: "var(--text-secondary)" }}>{fileLabel}</strong> and generating your{" "}
+            Gemini is reading <strong style={{ color: "var(--text-secondary)" }}>{fileLabel}</strong> and generating your{" "}
             {mode === "MCQ" ? "quiz" : mode === "Flashcard" ? "flashcards" : "summary"}.
           </p>
         </div>

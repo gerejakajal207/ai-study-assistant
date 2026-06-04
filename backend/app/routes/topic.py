@@ -39,3 +39,4 @@ async def get_summary(request: SummaryRequest):
             return {"validation": validation}
     summary = generate_summary(request.topic)
     return {"summary": summary}
+    
